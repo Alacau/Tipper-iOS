@@ -160,7 +160,7 @@ class TipViewController: UIViewController {
         tipAmount.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
         tipAmount.centerYAnchor.constraint(equalTo: tipLabel.centerYAnchor).isActive = true
         
-        tipSelector.selectedSegmentIndex = 0
+        tipSelector.selectedSegmentIndex = 2
         tipSelector.backgroundColor = UIColor(red: 255/255, green: 55/255, blue: 95/255, alpha: 0.25)
         tipSelector.translatesAutoresizingMaskIntoConstraints = false
         tipSelector.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
@@ -190,7 +190,8 @@ class TipViewController: UIViewController {
         let bill = Double(billAmount.text!) ?? 0
         let split = Double(splitAmount.text!) ?? 0
         
-        let tip = bill * percent
+        let tips = [0, 0.10, 0.15, 0.20, 0.25]
+        let tip = bill * tips[tipSelector.selectedSegmentIndex]
         let total = (bill + tip) / split
         
         totalAmount.text = String(format: "$%.2f", total)
