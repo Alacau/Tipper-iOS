@@ -12,6 +12,8 @@ class TipViewController: UIViewController {
       
     // MARK: - Properties
     
+    let tips = [0, 0.10, 0.15, 0.20, 0.25]
+    
     private let totalTitle: UILabel = {
         let label = UILabel()
         label.text = "Total Per Person"
@@ -114,14 +116,83 @@ class TipViewController: UIViewController {
         return segmentedControl
     }()
         
-    let tapGesture = UITapGestureRecognizer()
+    private let tapGesture = UITapGestureRecognizer()
         
     override func viewDidLoad() {
         super.viewDidLoad()
         
         configureUI()
-//        setupTip()
     }
+    
+    // MARK: - Selectors
+    
+    @objc func tipSelected() {
+        switch tipSelector.selectedSegmentIndex {
+        case 0: calculateTip(percent: 0)
+        case 1: calculateTip(percent: 0.10)
+        case 2: calculateTip(percent: 0.15)
+        case 3: calculateTip(percent: 0.20)
+        case 4: calculateTip(percent: 0.25)
+        default: return
+        }
+    }
+    
+    @objc func calculateTip(percent: Double) {
+        let bill = Double(billAmount.text!) ?? 0
+        let split = Double(splitAmount.text!) ?? 0
+        
+        let tip = bill * tips[tipSelector.selectedSegmentIndex]
+        let total = (bill + tip) / split
+        
+        totalAmount.text = String(format: "$%.2f", total)
+        tipAmount.text = String(format: "$%.2f", tip)
+    }
+    
+    @objc func stepDown() {
+        let bill = Double(billAmount.text!) ?? 0
+        var split = Double(splitAmount.text!) ?? 0
+        
+        var convertedString = Int(splitAmount.text!) ?? 1
+        convertedString -= 1
+        split = Double(convertedString)
+        if convertedString <= 1 {
+            convertedString = 1
+            split = Double(convertedString)
+        }
+        
+        let tip = bill * tips[tipSelector.selectedSegmentIndex]
+        let total = (bill + tip) / split
+        
+        totalAmount.text = String(format: "$%.2f", total)
+        tipAmount.text = String(format: "$%.2f", tip)
+        splitAmount.text = String(convertedString)
+    }
+    
+    @objc func stepUp() {
+        let bill = Double(billAmount.text!) ?? 0
+        var split = Double(splitAmount.text!) ?? 0
+    
+        var convertedString = Int(splitAmount.text!) ?? 1
+        convertedString += 1
+        split = Double(convertedString)
+        if convertedString >= 100 {
+            convertedString = 100
+            split = Double(convertedString)
+        }
+        
+        let tip = bill * tips[tipSelector.selectedSegmentIndex]
+        let total = (bill + tip) / split
+        
+        totalAmount.text = String(format: "$%.2f", total)
+        tipAmount.text = String(format: "$%.2f", tip)
+        splitAmount.text = String(convertedString)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    // MARK: - Helpers
     
     func configureUI() {
         self.title = "Tipper"
@@ -178,81 +249,5 @@ class TipViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.isTranslucent = true
         navigationController?.navigationBar.overrideUserInterfaceStyle = .dark
-        //navigationItem.title = self.title
-    }
-    
-    @objc func tipSelected() {
-        switch tipSelector.selectedSegmentIndex {
-        case 0:
-            calculateTip(percent: 0)
-        case 1:
-            calculateTip(percent: 0.10)
-        case 2:
-            calculateTip(percent: 0.15)
-        case 3:
-            calculateTip(percent: 0.20)
-        case 4:
-            calculateTip(percent: 0.25)
-        default:
-            return
-        }
-    }
-    
-    @objc func calculateTip(percent: Double) {
-        let bill = Double(billAmount.text!) ?? 0
-        let split = Double(splitAmount.text!) ?? 0
-        
-        let tips = [0, 0.10, 0.15, 0.20, 0.25]
-        let tip = bill * tips[tipSelector.selectedSegmentIndex]
-        let total = (bill + tip) / split
-        
-        totalAmount.text = String(format: "$%.2f", total)
-        tipAmount.text = String(format: "$%.2f", tip)
-    }
-    
-    @objc func stepDown() {
-        let bill = Double(billAmount.text!) ?? 0
-        var split = Double(splitAmount.text!) ?? 0
-        
-        var convertedString = Int(splitAmount.text!) ?? 1
-        convertedString -= 1
-        split = Double(convertedString)
-        if convertedString <= 1 {
-            convertedString = 1
-            split = Double(convertedString)
-        }
-        
-        let tips = [0, 0.10, 0.15, 0.20, 0.25]
-        let tip = bill * tips[tipSelector.selectedSegmentIndex]
-        let total = (bill + tip) / split
-        
-        totalAmount.text = String(format: "$%.2f", total)
-        tipAmount.text = String(format: "$%.2f", tip)
-        splitAmount.text = String(convertedString)
-    }
-    
-    @objc func stepUp() {
-        let bill = Double(billAmount.text!) ?? 0
-        var split = Double(splitAmount.text!) ?? 0
-    
-        var convertedString = Int(splitAmount.text!) ?? 1
-        convertedString += 1
-        split = Double(convertedString)
-        if convertedString >= 100 {
-            convertedString = 100
-            split = Double(convertedString)
-        }
-        
-        let tips = [0, 0.10, 0.15, 0.20]
-        let tip = bill * tips[tipSelector.selectedSegmentIndex]
-        let total = (bill + tip) / split
-        
-        totalAmount.text = String(format: "$%.2f", total)
-        tipAmount.text = String(format: "$%.2f", tip)
-        splitAmount.text = String(convertedString)
-    }
-    
-    @objc func dismissKeyboard() {
-        view.endEditing(true)
     }
 }
