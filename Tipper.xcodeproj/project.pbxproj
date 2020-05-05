@@ -14,6 +14,8 @@
 		44728D72244F6DA800180C4C /* TipperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44728D71244F6DA800180C4C /* TipperTests.swift */; };
 		44728D7D244F6DA800180C4C /* TipperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44728D7C244F6DA800180C4C /* TipperUITests.swift */; };
 		44728D8B244F6F0A00180C4C /* TipViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44728D8A244F6F0A00180C4C /* TipViewController.swift */; };
+		44F63F302462166C007971C5 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44F63F2F2462166C007971C5 /* Extensions.swift */; };
+		44F63F3224621A22007971C5 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44F63F3124621A22007971C5 /* Utilities.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +49,8 @@
 		44728D7C244F6DA800180C4C /* TipperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipperUITests.swift; sourceTree = "<group>"; };
 		44728D7E244F6DA800180C4C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		44728D8A244F6F0A00180C4C /* TipViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipViewController.swift; sourceTree = "<group>"; };
+		44F63F2F2462166C007971C5 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		44F63F3124621A22007971C5 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +101,7 @@
 		44728D59244F6DA600180C4C /* Tipper */ = {
 			isa = PBXGroup;
 			children = (
+				44F63F2E2462165C007971C5 /* Utilities */,
 				44728D5A244F6DA600180C4C /* AppDelegate.swift */,
 				44728D5C244F6DA600180C4C /* SceneDelegate.swift */,
 				44728D8A244F6F0A00180C4C /* TipViewController.swift */,
@@ -123,6 +128,15 @@
 				44728D7E244F6DA800180C4C /* Info.plist */,
 			);
 			path = TipperUITests;
+			sourceTree = "<group>";
+		};
+		44F63F2E2462165C007971C5 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				44F63F2F2462166C007971C5 /* Extensions.swift */,
+				44F63F3124621A22007971C5 /* Utilities.swift */,
+			);
+			path = Utilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -255,6 +269,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				44F63F3224621A22007971C5 /* Utilities.swift in Sources */,
+				44F63F302462166C007971C5 /* Extensions.swift in Sources */,
 				44728D5B244F6DA600180C4C /* AppDelegate.swift in Sources */,
 				44728D8B244F6F0A00180C4C /* TipViewController.swift in Sources */,
 				44728D5D244F6DA600180C4C /* SceneDelegate.swift in Sources */,

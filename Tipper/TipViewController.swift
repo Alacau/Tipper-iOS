@@ -9,36 +9,158 @@
 import UIKit
 
 class TipViewController: UIViewController {
+      
+    // MARK: - Properties
+    
+    private let totalTitle: UILabel = {
+        let label = UILabel()
+        label.text = "Total Per Person"
+        label.textColor = .systemPink
+        label.font = UIFont(name: "Avenir Next", size: 20)
         
-    let totalTitle = UILabel()
-    var totalAmount = UILabel()
+        return label
+    }()
     
-    let billLabel = UILabel()
-    let billAmount = UITextField()
+    private let totalAmount: UILabel = {
+        let label = UILabel()
+        label.text = "$0.00"
+        label.textColor = .systemPink
+        label.font = UIFont(name: "Avenir Next", size: 36)
+        
+        return label
+    }()
     
-    let splitLabel = UILabel()
-    let splitMinus = UIButton()
-    let splitAmount = UILabel()
-    let splitPlus = UIButton()
+    private let billLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Bill Amount"
+        label.textColor = .placeholderText
+        label.font = UIFont(name: "Avenir Next", size: 20)
+        
+        return label
+    }()
     
-    let tipLabel = UILabel()
-    let tipAmount = UILabel()
-    let tipSelector = UISegmentedControl(items: ["0%", "10%", "15%", "20%", "25%"])
+    private let billAmount: UITextField = {
+        let textField = Utilities().textField(withPlaceholder: "$0.00")
+        textField.addTarget(self, action: #selector(calculateTip), for: .editingChanged)
+        textField.setDimensions(width: 86, height: 35)
+        
+        return textField
+    }()
+        
+    private let splitLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Split"
+        label.textColor = .placeholderText
+        label.font = UIFont(name: "Avenir Next", size: 20)
+        
+        return label
+    }()
     
+    private let splitMinus: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("-", for: .normal)
+        button.setTitleColor(.systemPink, for: .normal)
+        button.backgroundColor = UIColor(red: 255/255, green: 55/255, blue: 95/255, alpha: 0.25)
+        button.layer.cornerRadius = 10
+        button.addTarget(self, action: #selector(stepDown), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    private let splitAmount: UILabel = {
+        let label = UILabel()
+        label.text = "1"
+        label.textColor = .systemPink
+        label.font = UIFont(name: "Avenir Next", size: 20)
+        
+        return label
+    }()
+    
+    private let splitPlus: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("+", for: .normal)
+        button.setTitleColor(.systemPink, for: .normal)
+        button.backgroundColor = UIColor(red: 255/255, green: 55/255, blue: 95/255, alpha: 0.25)
+        button.layer.cornerRadius = 10
+        button.addTarget(self, action: #selector(stepUp), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    private let tipLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Tip"
+        label.textColor = .placeholderText
+        label.font = UIFont(name: "Avenir Next", size: 20)
+        
+        return label
+    }()
+    
+    private let tipAmount: UILabel = {
+        let label = UILabel()
+        label.text = "$0.00"
+        label.textColor = .systemPink
+        label.font = UIFont(name: "Avenir Next", size: 20)
+        
+        return label
+    }()
+        
+    private let tipSelector: UISegmentedControl = {
+        let segmentedControl = UISegmentedControl(items: ["0%", "10%", "15%", "20%", "25%"])
+        segmentedControl.selectedSegmentIndex = 2
+        segmentedControl.backgroundColor = UIColor(red: 255/255, green: 55/255, blue: 95/255, alpha: 0.25)
+        segmentedControl.addTarget(self, action: #selector(tipSelected), for: .valueChanged)
+
+        return segmentedControl
+    }()
+        
     let tapGesture = UITapGestureRecognizer()
         
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        configureUI()
+//        setupTip()
+    }
+    
+    func configureUI() {
+        self.title = "Tipper"
         view.backgroundColor = .white
+        
         view.addGestureRecognizer(tapGesture)
         tapGesture.addTarget(self, action: #selector(dismissKeyboard))
         
         setupNavigation()
-        setupTotal()
-        setupBill()
-        setupSplit()
-        setupTip()
+        
+        view.addSubview(totalTitle)
+        totalTitle.centerX(inView: view)
+        totalTitle.anchor(top: view.safeAreaLayoutGuide.topAnchor, paddingTop: 20)
+        
+        view.addSubview(totalAmount)
+        totalAmount.centerX(inView: view)
+        totalAmount.anchor(top: totalTitle.bottomAnchor, paddingTop: 8)
+        
+        let billStack = UIStackView(arrangedSubviews: [billLabel, billAmount])
+        billStack.axis = .horizontal
+        view.addSubview(billStack)
+        billStack.anchor(top: totalAmount.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 50, paddingLeft: 20, paddingRight: 20)
+        
+        let stepperStack = UIStackView(arrangedSubviews: [splitMinus, splitAmount, splitPlus])
+        stepperStack.axis = .horizontal
+        stepperStack.spacing = 8
+        let splitStack = UIStackView(arrangedSubviews: [splitLabel, stepperStack])
+        splitStack.axis = .horizontal
+        view.addSubview(splitStack)
+        splitStack.anchor(top: billStack.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 50, paddingLeft: 20, paddingRight: 20)
+        
+        let tipStack = UIStackView(arrangedSubviews: [tipLabel, tipAmount])
+        tipStack.axis = .horizontal
+        view.addSubview(tipStack)
+        tipAmount.anchor(right: tipStack.rightAnchor)
+        tipStack.anchor(top: splitStack.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 50, paddingLeft: 20, paddingRight: 20)
+        
+        view.addSubview(tipSelector)
+        tipSelector.anchor(top: tipStack.bottomAnchor, left: view.leftAnchor, right: view.rightAnchor, paddingTop: 30, paddingLeft: 40, paddingRight: 40)
     }
 
     func setupNavigation() {
@@ -50,123 +172,13 @@ class TipViewController: UIViewController {
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
-        
+                
         // Navigation bar appearance
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.tintColor = .white
         navigationController?.navigationBar.isTranslucent = true
         navigationController?.navigationBar.overrideUserInterfaceStyle = .dark
-        navigationItem.title = "Tipper"
-    }
-    
-    func setupTotal() {
-        view.addSubview(totalTitle)
-        view.addSubview(totalAmount)
-                
-        totalTitle.text = "Total Per Person"
-        totalTitle.textColor = .systemPink
-        totalTitle.font = UIFont(name: "Avenir Next", size: 20)
-        totalTitle.translatesAutoresizingMaskIntoConstraints = false
-        totalTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        totalTitle.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20).isActive = true
-        
-        totalAmount.text = "$0.00"
-        totalAmount.textColor = .systemPink
-        totalAmount.font = UIFont(name: "Avenir Next", size: 36)
-        totalAmount.translatesAutoresizingMaskIntoConstraints = false
-        totalAmount.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        totalAmount.topAnchor.constraint(equalTo: totalTitle.bottomAnchor, constant: 8).isActive = true
-    }
-    
-    func setupBill() {
-        view.addSubview(billLabel)
-        view.addSubview(billAmount)
-        
-        billLabel.text = "Bill Amount"
-        billLabel.textColor = .placeholderText
-        billLabel.font = UIFont(name: "Avenir Next", size: 20)
-        billLabel.translatesAutoresizingMaskIntoConstraints = false
-        billLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        billLabel.trailingAnchor.constraint(equalTo: billAmount.leadingAnchor, constant: -20).isActive = true
-        billLabel.topAnchor.constraint(equalTo: totalAmount.bottomAnchor, constant: 50).isActive = true
-        
-        billAmount.textColor = .systemPink
-        billAmount.placeholder = "$0.00"
-        billAmount.borderStyle = .roundedRect
-        billAmount.keyboardType = .decimalPad
-        billAmount.translatesAutoresizingMaskIntoConstraints = false
-        billAmount.leadingAnchor.constraint(equalTo: billLabel.trailingAnchor, constant: 20).isActive = false
-        billAmount.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
-        billAmount.centerYAnchor.constraint(equalTo: billLabel.centerYAnchor).isActive = true
-        billAmount.widthAnchor.constraint(equalToConstant: 150).isActive = true
-        billAmount.addTarget(self, action: #selector(calculateTip), for: .editingChanged)
-    }
-    
-    func setupSplit() {
-        view.addSubview(splitLabel)
-        view.addSubview(splitMinus)
-        view.addSubview(splitAmount)
-        view.addSubview(splitPlus)
-        
-        splitLabel.text = "Split"
-        splitLabel.textColor = .placeholderText
-        splitLabel.font = UIFont(name: "Avenir Next", size: 20)
-        splitLabel.translatesAutoresizingMaskIntoConstraints = false
-        splitLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        splitLabel.topAnchor.constraint(equalTo: billLabel.bottomAnchor, constant: 50).isActive = true
-        
-        splitMinus.setTitle("-", for: .normal)
-        splitMinus.setTitleColor(.systemPink, for: .normal)
-        splitMinus.backgroundColor = UIColor(red: 255/255, green: 55/255, blue: 95/255, alpha: 0.25)
-        splitMinus.layer.cornerRadius = 10
-        splitMinus.translatesAutoresizingMaskIntoConstraints = false
-        splitMinus.trailingAnchor.constraint(equalTo: splitAmount.leadingAnchor, constant: -12).isActive = true
-        splitMinus.centerYAnchor.constraint(equalTo: splitLabel.centerYAnchor).isActive = true
-        splitMinus.addTarget(self, action: #selector(stepDown), for: .touchUpInside)
-        
-        splitAmount.text = "1"
-        splitAmount.textColor = .systemPink
-        splitAmount.font = UIFont(name: "Avenir Next", size: 20)
-        splitAmount.translatesAutoresizingMaskIntoConstraints = false
-        splitAmount.trailingAnchor.constraint(equalTo: splitPlus.leadingAnchor, constant: -12).isActive = true
-        splitAmount.centerYAnchor.constraint(equalTo: splitLabel.centerYAnchor).isActive = true
-        
-        splitPlus.setTitle("+", for: .normal)
-        splitPlus.setTitleColor(.systemPink, for: .normal)
-        splitPlus.backgroundColor = UIColor(red: 255/255, green: 55/255, blue: 95/255, alpha: 0.25)
-        splitPlus.layer.cornerRadius = 10
-        splitPlus.translatesAutoresizingMaskIntoConstraints = false
-        splitPlus.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
-        splitPlus.centerYAnchor.constraint(equalTo: splitLabel.centerYAnchor).isActive = true
-        splitPlus.addTarget(self, action: #selector(stepUp), for: .touchUpInside)
-    }
-    
-    func setupTip() {
-        view.addSubview(tipLabel)
-        view.addSubview(tipAmount)
-        view.addSubview(tipSelector)
-        
-        tipLabel.text = "Tip"
-        tipLabel.textColor = .placeholderText
-        tipLabel.font = UIFont(name: "Avenir Next", size: 20)
-        tipLabel.translatesAutoresizingMaskIntoConstraints = false
-        tipLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20).isActive = true
-        tipLabel.topAnchor.constraint(equalTo: splitLabel.bottomAnchor, constant: 50).isActive = true
-        
-        tipAmount.text = "$0.00"
-        tipAmount.textColor = .systemPink
-        tipAmount.font = UIFont(name: "Avenir Next", size: 20)
-        tipAmount.translatesAutoresizingMaskIntoConstraints = false
-        tipAmount.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
-        tipAmount.centerYAnchor.constraint(equalTo: tipLabel.centerYAnchor).isActive = true
-        
-        tipSelector.selectedSegmentIndex = 2
-        tipSelector.backgroundColor = UIColor(red: 255/255, green: 55/255, blue: 95/255, alpha: 0.25)
-        tipSelector.translatesAutoresizingMaskIntoConstraints = false
-        tipSelector.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
-        tipSelector.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40).isActive = true
-        tipSelector.topAnchor.constraint(equalTo: tipLabel.bottomAnchor, constant: 30).isActive = true
-        tipSelector.addTarget(self, action: #selector(tipSelected), for: .valueChanged)
+        //navigationItem.title = self.title
     }
     
     @objc func tipSelected() {
@@ -242,8 +254,5 @@ class TipViewController: UIViewController {
     
     @objc func dismissKeyboard() {
         view.endEditing(true)
-    }
-    
-    @objc func updateLabels() {
     }
 }
